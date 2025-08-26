@@ -1,6 +1,5 @@
 package com.kun.java.ai.langchain4j;
 
-import ai.djl.huggingface.tokenizers.HuggingFaceTokenizer;
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.loader.FileSystemDocumentLoader;
 import dev.langchain4j.data.document.parser.TextDocumentParser;
@@ -8,8 +7,7 @@ import dev.langchain4j.data.document.parser.apache.pdfbox.ApachePdfBoxDocumentPa
 import dev.langchain4j.data.document.splitter.DocumentByParagraphSplitter;
 import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.data.segment.TextSegment;
-import dev.langchain4j.model.embedding.onnx.HuggingFaceTokenCountEstimator;
-import dev.langchain4j.model.openai.OpenAiTokenCountEstimator;
+import dev.langchain4j.model.embedding.onnx.HuggingFaceTokenizer;
 import dev.langchain4j.store.embedding.EmbeddingStoreIngestor;
 import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
 import org.junit.jupiter.api.Test;
@@ -21,6 +19,10 @@ import java.util.List;
 
 @SpringBootTest
  public class RAGTest {
+
+    /**
+     * 读取文档
+      */
  @Test
  public void testReadDocument() {
      //使用FileSystemDocumentLoader读取指定目录下的知识库文档
@@ -78,7 +80,7 @@ import java.util.List;
               300,
               30,
               //token分词器：按token计算
-              new HuggingFaceTokenCountEstimator());
+              new HuggingFaceTokenizer());
 
       //按字符计算:向量转换以及向量存储
       //DocumentByParagraphSplitter documentSplitter = new DocumentByParagraphSplitter(300, 30);
@@ -88,7 +90,6 @@ import java.util.List;
               .documentSplitter(documentSplitter)
               .build()
               .ingest(document);
-
  }
 
      @Test
@@ -96,7 +97,8 @@ import java.util.List;
       String text = "这是一个示例文本，用于测试 token 长度的计算。";
       UserMessage userMessage = UserMessage.userMessage(text);
       //计算 token 长度
-      OpenAiTokenCountEstimator tokenizer = new OpenAiTokenCountEstimator("openAiChatModel");
+      //OpenAiTokenCountEstimator tokenizer = new OpenAiTokenCountEstimator("openAiChatModel");
+      HuggingFaceTokenizer tokenizer = new HuggingFaceTokenizer();
 
       int count = tokenizer.estimateTokenCountInMessage(userMessage);
       System.out.println("token长度：" + count);
